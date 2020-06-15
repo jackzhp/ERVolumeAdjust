@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Eric Robinson. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+//#import <Cocoa/Cocoa.h>
 #import <AVFoundation/AVFoundation.h>
 #import "ERInputVolumeControl.h"
 
