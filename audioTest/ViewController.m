@@ -83,28 +83,52 @@ NSString *dirVoiceMSGs;
                 NSError *error;
                 //                NSInputStream *is=[[NSInputStream alloc]initWithData:data];
                 //                NSJSONSerialization *o=[NSJSONSerialization JSONObjectWithStream:is options:0 error:&error];
-                NSDictionary<NSString*,NSString*> *dict=[NSJSONSerialization JSONObjectWithData:(NSData *)data
-                                                                                        options:0
-                                                                                          error:&error];
                 if(error){
                     NSLog(@"failed to parse json:%@",error);
                 }else{
-                    if([@"bk.anysdk.onPlayInfo" isEqualToString:fn]){
-                        [self onPlayInfo:dict]; //Method cache corrupted. This may be a message to an invalid object, or a memory error somewhere else.
-                    }else if([@"bk.anysdk.onRecordInfo" isEqualToString:fn]){
-                        [self onRecordInfo:dict];
+                    if([@"bk.anysdk.allFilesAudio" isEqualToString:fn]){
+                        NSArray<NSString*> *array=[NSJSONSerialization JSONObjectWithData:(NSData *)data
+                                                                                                options:0
+                                                                                                  error:&error];
+                        if(NO){
+                        //bk.anysdk.allFilesAudio('["1590715290.bin","1590710074.bin","1590709533.bin.m4a","273.bin","1590762022.bin","1590714900.bin.m4a","ca3cd36e-e121-4a85-9b3f-0daa92af7d54.2346f.mp3","1590708470.bin.m4a","1590761799.bin","1590712551.bin.m4a","1590713064.bin.m4a","1590762022.bin.m4a","1590706484.bin.m4a","1590719564.bin","1590707044.bin.m4a","1590707712.bin.m4a","1590719564.bin.m4a","771.mp3","1590761871.bin"]')
+                        self.files=@[//@"1590715290.bin",@"1590710074.bin",
+                            @"1590709533.bin.m4a",//@"273.bin","1590762022.bin",
+                            @"1590714900.bin.m4a",//"ca3cd36e-e121-4a85-9b3f-0daa92af7d54.2346f.mp3",
+                            @"1590708470.bin.m4a",//"1590761799.bin",
+                            @"1590712551.bin.m4a",@"1590713064.bin.m4a",@"1590762022.bin.m4a",@"1590706484.bin.m4a",//"1590719564.bin",
+                            @"1590707044.bin.m4a",@"1590707712.bin.m4a",@"1590719564.bin.m4a"];//,"771.mp3","1590761871.bin"
+                        }else{
+                        self.files=array;
+                        }
+                        [self.msgs reloadAllComponents];
                     }else{
-                        NSLog(@"unknown fn:%@",fn);
+                        NSDictionary<NSString*,NSString*> *dict=[NSJSONSerialization JSONObjectWithData:(NSData *)data
+                                                                                                options:0
+                                                                                                  error:&error];
+                        if([@"bk.anysdk.onPlayInfo" isEqualToString:fn]){
+                            [self onPlayInfo:dict]; //Method cache corrupted. This may be a message to an invalid object, or a memory error somewhere else.
+                        }else if([@"bk.anysdk.onRecordInfo" isEqualToString:fn]){
+                            [self onRecordInfo:dict];
+                        } else {
+                            NSLog(@"unknown fn:%@",fn);
+                        }
                     }
                 }
             }
         }
     };
     if(true){ //test part
+        /* I should have a note here telling how did I put the file into the bundle.
+         I have forgot it.
+         
+         now I copied the file into Assets.xcassets folder. can not find it.
+         I copied to audioTest folder, and then in the building phases, add copy item. Yes. found it.
+         */
         //copy an mp3 file to the dest
         //        NSString *fn=@"ca3cd36e-e121-4a85-9b3f-0daa92af7d54.2346f"; //.mp3
         //        NSString *type=@"mp3";
-        NSString *fn=@"273"; //.mp3
+        NSString *fn=@"03896bf6_fa72_4ba9_b8fe_9e7938609783";//@"273"; //.mp3
         NSString *type=@"bin";
         NSFileManager *fm=NSFileManager.defaultManager;
         NSError *error;
@@ -260,7 +284,7 @@ NSString *dirVoiceMSGs;
 - (IBAction)startRecord:(id)sender {
     NSDate *dnow=[NSDate new];
     long lts=dnow.timeIntervalSince1970;
-    NSString *fn=[NSString stringWithFormat:@"%ld.bin",lts];
+    NSString *fn=[NSString stringWithFormat:@"%ld.m4a",lts];
     self->fnRecord=fn;
     [av record:fn duration:self.durationMax4record];
 }
@@ -275,19 +299,19 @@ NSString *dirVoiceMSGs;
     NSLog(@"refresh MSGs requested");
     //-(void)listFilesAudio;
     if(false){
-    NSFileManager *fm=[NSFileManager defaultManager];
-    NSError *error;
-    NSArray<NSString *> *files=[fm contentsOfDirectoryAtPath:[AVsimple singlenton].dir error:&error];
-    if(files){
-        for(NSString *file in files){
-            NSLog(@"file:%@",file);
+        NSFileManager *fm=[NSFileManager defaultManager];
+        NSError *error;
+        NSArray<NSString *> *files=[fm contentsOfDirectoryAtPath:[AVsimple singlenton].dir error:&error];
+        if(files){
+            for(NSString *file in files){
+                NSLog(@"file:%@",file);
+            }
+            self.files=files;
+            return YES;
+        }else{
+            NSLog(@"failed to fetch list:%@",error);
+            return NO;
         }
-        self.files=files;
-        return YES;
-    }else{
-        NSLog(@"failed to fetch list:%@",error);
-        return NO;
-    }
     }else{
         [[AVsimple singlenton] listFilesAudio];
     }
@@ -355,6 +379,15 @@ NSString *dirVoiceMSGs;
 - (IBAction)testInWebView:(id)sender {
     //self.wkWebView load web page
     //just use yjdev9, don't bother.
+    
+}
+- (IBAction)doUpload:(id)sender {
+    if(self->fnToPlay){
+    
+    [av upload:self->fnToPlay urlBase:@"http://192.168.254.138:8080/Receiver"];
+    }else{
+        NSLog(@"file not chosen");
+    }
     
 }
 

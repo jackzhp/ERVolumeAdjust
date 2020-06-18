@@ -52,6 +52,8 @@
 -(void)delete:(NSString *)fn;
 -(void)setDirParent:(NSString *)dirWritable;
 -(void)listFilesAudio;
+-(void)upload:(NSString *)fn urlBase:(NSString *)url;
+-(void)download:(NSString *)fn urlBase:(NSString *)url;
 
 @end
 

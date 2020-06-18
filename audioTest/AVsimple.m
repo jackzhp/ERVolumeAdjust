@@ -10,12 +10,13 @@
 #import <UIKit/UIDevice.h>
 #import "AVsimple.h"
 #import "SocketStreams.h"
+#import "UpLoader.h"
 
-//@interface AVsimple(private)
-//
-//
-//
-//@end
+@interface AVsimple()<UpLoaderUser>
+
+
+
+@end
 
 
 static AVsimple *one=nil;
@@ -292,13 +293,30 @@ static AVsimple *one=nil;
     //                                           [NSNumber numberWithInt:16],AVLinearPCMBitDepthKey,
     //                                           [NSNumber numberWithBool:NO],AVLinearPCMIsBigEndianKey,
     //                                           [NSNumber numberWithBool:NO],AVLinearPCMIsFloatKey,nil];
+    //the following set can not be played on android
+//    NSDictionary<NSString *,id> *settings=[[NSDictionary alloc] initWithObjectsAndKeys:
+//                                           [NSNumber numberWithInt:kAudioFormatMPEG4AAC], AVFormatIDKey,
+//                                           [NSNumber numberWithInt:16000],AVSampleRateKey,
+//                                           [NSNumber numberWithInt:2],AVNumberOfChannelsKey,
+//                                           [NSNumber numberWithInt:16],AVLinearPCMBitDepthKey,
+//                                           [NSNumber numberWithBool:YES],AVLinearPCMIsBigEndianKey,
+//                                           [NSNumber numberWithBool:YES],AVLinearPCMIsFloatKey,nil];
+    /* the following set recorded file:
+     1592290311.bin the recorded file. can be played on ipad
+     1592290311.bin.m4a failed to be played on ipad. corrupted. I guess this does not happen all the time.
+5ba8fe82_6b75_4d61_ab91_84d08db09bbc.bin  the same file uploaded(36287 bytes).
+     confirmed it can not be played on android. 
+     
+
+    */
     NSDictionary<NSString *,id> *settings=[[NSDictionary alloc] initWithObjectsAndKeys:
                                            [NSNumber numberWithInt:kAudioFormatMPEG4AAC], AVFormatIDKey,
                                            [NSNumber numberWithInt:16000],AVSampleRateKey,
-                                           [NSNumber numberWithInt:2],AVNumberOfChannelsKey,
+                                           [NSNumber numberWithInt:1],AVNumberOfChannelsKey,
                                            [NSNumber numberWithInt:16],AVLinearPCMBitDepthKey,
-                                           [NSNumber numberWithBool:YES],AVLinearPCMIsBigEndianKey,
-                                           [NSNumber numberWithBool:YES],AVLinearPCMIsFloatKey,nil];
+                                           [NSNumber numberWithBool:NO],AVLinearPCMIsBigEndianKey,
+                                           [NSNumber numberWithBool:NO],AVLinearPCMIsFloatKey,
+                                           nil];
     NSError *error;
     self.recorder=[[AVAudioRecorder alloc]initWithURL:url
                                              settings:settings
@@ -409,9 +427,9 @@ static AVsimple *one=nil;
         if(tf){}else{
             NSLog(@"failed to delete %@",path);
         }
+    }else{
+      //TODO: notify file not found.
     }
-    
-    
 }
 
 -(void)setDirParent:(NSString *)dirWritable{ //with ending "/"
@@ -449,9 +467,31 @@ static AVsimple *one=nil;
         //    NSLog(@"failed to fetch list:%@",error);
         //    return NO;
     }
-    
-    
-    
+}
+
+-(void)upload:(NSString *)fn urlBase:(NSString *)url{
+    NSString *path=[NSString stringWithFormat:@"%@%@",self.dir,fn];
+    NSFileManager *fm=[NSFileManager defaultManager];
+    if([fm fileExistsAtPath:path]){
+        NSString *urlFull=[NSString stringWithFormat:@"%@/%@",url,fn];
+        id<UpLoaderUser> user=self;
+        int ID=[UpLoader upload:path url:urlFull user:user];
+        //we won't cancel, and we do not care the progress etc.
+    }else{
+        //TODO: notify file not found.
+    }
+}
+
+-(void)download:(NSString *)fn urlBase:(NSString *)url{
     
 }
+-(void)onProgress:(int)ID progress:(int)progress{
+    NSLog(@"progress for %d:%d%%",ID,progress);
+}
+
+-(void)onEnded:(int)ID ireason:(int)ireason sreason:(NSString *)sreason{
+    NSLog(@"upload ended for %d:%d:%@",ID,ireason,sreason);
+}
+
+
 @end

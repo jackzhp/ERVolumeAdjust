@@ -18,6 +18,10 @@
 		C545BF0124792CD9007D32E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C545BF0024792CD9007D32E2 /* Assets.xcassets */; };
 		C545BF0424792CD9007D32E2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C545BF0224792CD9007D32E2 /* LaunchScreen.storyboard */; };
 		C545BF0724792CD9007D32E2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C545BF0624792CD9007D32E2 /* main.m */; };
+		C5E84BF62497B5780047A1DB /* TUSData.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E84BF42497B5770047A1DB /* TUSData.m */; };
+		C5E84BF72497B5780047A1DB /* TUSResumableUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E84BF52497B5770047A1DB /* TUSResumableUpload.m */; };
+		C5E84BFA2497BD180047A1DB /* UpLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E84BF92497BD180047A1DB /* UpLoader.m */; };
+		C5E84BFD2498A22E0047A1DB /* 03896bf6_fa72_4ba9_b8fe_9e7938609783.bin in Resources */ = {isa = PBXBuildFile; fileRef = C5E84BFC2498A22E0047A1DB /* 03896bf6_fa72_4ba9_b8fe_9e7938609783.bin */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +45,13 @@
 		C545BF0324792CD9007D32E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C545BF0524792CD9007D32E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C545BF0624792CD9007D32E2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C5E84BF22497B5770047A1DB /* TUSData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUSData.h; sourceTree = "<group>"; };
+		C5E84BF32497B5770047A1DB /* TUSResumableUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUSResumableUpload.h; sourceTree = "<group>"; };
+		C5E84BF42497B5770047A1DB /* TUSData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUSData.m; sourceTree = "<group>"; };
+		C5E84BF52497B5770047A1DB /* TUSResumableUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUSResumableUpload.m; sourceTree = "<group>"; };
+		C5E84BF82497BCBE0047A1DB /* UpLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UpLoader.h; sourceTree = "<group>"; };
+		C5E84BF92497BD180047A1DB /* UpLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UpLoader.m; sourceTree = "<group>"; };
+		C5E84BFC2498A22E0047A1DB /* 03896bf6_fa72_4ba9_b8fe_9e7938609783.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = 03896bf6_fa72_4ba9_b8fe_9e7938609783.bin; path = audioTest/03896bf6_fa72_4ba9_b8fe_9e7938609783.bin; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +78,7 @@
 		C545BEE824792CD3007D32E2 = {
 			isa = PBXGroup;
 			children = (
+				C5E84BFC2498A22E0047A1DB /* 03896bf6_fa72_4ba9_b8fe_9e7938609783.bin */,
 				C545BEF324792CD4007D32E2 /* audioTest */,
 				C545BEF224792CD4007D32E2 /* Products */,
 				C51334CE247D23EA00289F71 /* Frameworks */,
@@ -84,6 +96,7 @@
 		C545BEF324792CD4007D32E2 /* audioTest */ = {
 			isa = PBXGroup;
 			children = (
+				C5E84BF12497B4730047A1DB /* net */,
 				C545BEF424792CD4007D32E2 /* AppDelegate.h */,
 				C545BEF524792CD4007D32E2 /* AppDelegate.m */,
 				C545BEF724792CD4007D32E2 /* SceneDelegate.h */,
@@ -97,12 +110,25 @@
 				C545BF0624792CD9007D32E2 /* main.m */,
 				C51334D1247D290C00289F71 /* AVsimple.h */,
 				C51334D2247D293400289F71 /* AVsimple.m */,
+			);
+			path = audioTest;
+			sourceTree = "<group>";
+		};
+		C5E84BF12497B4730047A1DB /* net */ = {
+			isa = PBXGroup;
+			children = (
 				C51334DC247F4F5700289F71 /* SocketServer.m */,
 				C51334DE247F700C00289F71 /* SocketStreams.m */,
 				C51334E0247FD8B800289F71 /* SocketStreams.h */,
 				C51334E1247FDEE900289F71 /* SocketServer.h */,
+				C5E84BF22497B5770047A1DB /* TUSData.h */,
+				C5E84BF42497B5770047A1DB /* TUSData.m */,
+				C5E84BF32497B5770047A1DB /* TUSResumableUpload.h */,
+				C5E84BF52497B5770047A1DB /* TUSResumableUpload.m */,
+				C5E84BF82497BCBE0047A1DB /* UpLoader.h */,
+				C5E84BF92497BD180047A1DB /* UpLoader.m */,
 			);
-			path = audioTest;
+			path = net;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -162,6 +188,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5E84BFD2498A22E0047A1DB /* 03896bf6_fa72_4ba9_b8fe_9e7938609783.bin in Resources */,
 				C545BF0424792CD9007D32E2 /* LaunchScreen.storyboard in Resources */,
 				C545BF0124792CD9007D32E2 /* Assets.xcassets in Resources */,
 				C545BEFF24792CD4007D32E2 /* Main.storyboard in Resources */,
@@ -177,11 +204,14 @@
 			files = (
 				C51334DF247F700C00289F71 /* SocketStreams.m in Sources */,
 				C545BEFC24792CD4007D32E2 /* ViewController.m in Sources */,
+				C5E84BF62497B5780047A1DB /* TUSData.m in Sources */,
 				C545BEF624792CD4007D32E2 /* AppDelegate.m in Sources */,
+				C5E84BF72497B5780047A1DB /* TUSResumableUpload.m in Sources */,
 				C51334D3247D293400289F71 /* AVsimple.m in Sources */,
 				C545BF0724792CD9007D32E2 /* main.m in Sources */,
 				C545BEF924792CD4007D32E2 /* SceneDelegate.m in Sources */,
 				C51334DD247F4F5700289F71 /* SocketServer.m in Sources */,
+				C5E84BFA2497BD180047A1DB /* UpLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
