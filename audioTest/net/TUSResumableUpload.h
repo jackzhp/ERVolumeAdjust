@@ -35,11 +35,12 @@ NS_INLINE TUSRange TUSMakeRange(long long first, long long last) {
 @property (readwrite, copy) TUSUploadFailureBlock failureBlock;
 @property (readwrite, copy) TUSUploadProgressBlock progressBlock;
 @property (readwrite) int ID;
+@property (assign) long long sizeFile;
 
 //- (id)initWithURL:(NSString *)url data:(TUSData *)data fingerprint:(NSString *)fingerprint;
 //- (id)initWithURL:(NSString *)urlBase path:(NSString *)pathFile fingerprint:(NSString *)fingerprint;
 +(TUSResumableUpload *)task:(NSString *)urlBase path:(NSString *)pathFile fingerprint:(NSString *)fingerprint;
--(void)set:(int) fake data:(TUSData *)data;
+//-(void)set:(int) fake data:(TUSData *)data;
 - (void) start;
 + (NSMutableDictionary*)resumableUploads;
 
@@ -49,20 +50,6 @@ NS_INLINE TUSRange TUSMakeRange(long long first, long long last) {
 (NSError *)error;
 -(void)onDataSent;//:(TUSData *)data;
 
-/* if we sent 1 byte, then this increase 1.
- this is not the offset of this chunk of data in the big file.
- */
-@property (assign) long long offsetToSend;
-
-//@property (nonatomic,weak) TUSResumableUpload *upload;
-//@property (readwrite,copy) void (^failureBlock)(NSError* error);
-//@property (readwrite,copy) void (^successBlock)(void);
-
-//- (id)initWithData:(NSData*)data;
-//- (id)initWithData:(NSData*)data upload:(TUSResumableUpload *)upload;
-- (NSInputStream*)dataStream;
-- (long long)sizeFile;
-- (void)stop;
 
 
 @end
