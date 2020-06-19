@@ -109,10 +109,10 @@ static AVsimple *one=nil;
     if([fm fileExistsAtPath:path]){
         self.fnPlay=fn;
         self.pathPlay=path;
-//#ifdef MRC
-//        [self->fnPlay retain]; //passed down, so we need this.
-////        [self->pathPlay retain]; //this one, we do not need it?
-//#endif
+        //#ifdef MRC
+        //        [self->fnPlay retain]; //passed down, so we need this.
+        ////        [self->pathPlay retain]; //this one, we do not need it?
+        //#endif
         NSURL *url=[NSURL fileURLWithPath:path];
         NSError *error;
         self.player=[[AVAudioPlayer alloc]initWithContentsOfURL:url //fileTypeHint:<#(NSString * _Nullable)#>
@@ -281,10 +281,10 @@ static AVsimple *one=nil;
     isRecording=YES;
     NSString *path=[NSString stringWithFormat:@"%@%@",self.dir,fn];
     self.pathRecord=path;
-//#ifdef MRC
-//    [self->fnRecord retain];
-//    [self->pathRecord retain];
-//#endif
+    //#ifdef MRC
+    //    [self->fnRecord retain];
+    //    [self->pathRecord retain];
+    //#endif
     NSURL *url=[NSURL fileURLWithPath:path];
     //    NSDictionary<NSString *,id> *settings=[[NSDictionary alloc] initWithObjectsAndKeys:
     //                                           [NSNumber numberWithInt:kAudioFormatMPEG4AAC], AVFormatIDKey,
@@ -294,21 +294,21 @@ static AVsimple *one=nil;
     //                                           [NSNumber numberWithBool:NO],AVLinearPCMIsBigEndianKey,
     //                                           [NSNumber numberWithBool:NO],AVLinearPCMIsFloatKey,nil];
     //the following set can not be played on android
-//    NSDictionary<NSString *,id> *settings=[[NSDictionary alloc] initWithObjectsAndKeys:
-//                                           [NSNumber numberWithInt:kAudioFormatMPEG4AAC], AVFormatIDKey,
-//                                           [NSNumber numberWithInt:16000],AVSampleRateKey,
-//                                           [NSNumber numberWithInt:2],AVNumberOfChannelsKey,
-//                                           [NSNumber numberWithInt:16],AVLinearPCMBitDepthKey,
-//                                           [NSNumber numberWithBool:YES],AVLinearPCMIsBigEndianKey,
-//                                           [NSNumber numberWithBool:YES],AVLinearPCMIsFloatKey,nil];
+    //    NSDictionary<NSString *,id> *settings=[[NSDictionary alloc] initWithObjectsAndKeys:
+    //                                           [NSNumber numberWithInt:kAudioFormatMPEG4AAC], AVFormatIDKey,
+    //                                           [NSNumber numberWithInt:16000],AVSampleRateKey,
+    //                                           [NSNumber numberWithInt:2],AVNumberOfChannelsKey,
+    //                                           [NSNumber numberWithInt:16],AVLinearPCMBitDepthKey,
+    //                                           [NSNumber numberWithBool:YES],AVLinearPCMIsBigEndianKey,
+    //                                           [NSNumber numberWithBool:YES],AVLinearPCMIsFloatKey,nil];
     /* the following set recorded file:
      1592290311.bin the recorded file. can be played on ipad
      1592290311.bin.m4a failed to be played on ipad. corrupted. I guess this does not happen all the time.
-5ba8fe82_6b75_4d61_ab91_84d08db09bbc.bin  the same file uploaded(36287 bytes).
-     confirmed it can not be played on android. 
+     5ba8fe82_6b75_4d61_ab91_84d08db09bbc.bin  the same file uploaded(36287 bytes).
+     confirmed it can not be played on android.
      
-
-    */
+     
+     */
     NSDictionary<NSString *,id> *settings=[[NSDictionary alloc] initWithObjectsAndKeys:
                                            [NSNumber numberWithInt:kAudioFormatMPEG4AAC], AVFormatIDKey,
                                            [NSNumber numberWithInt:16000],AVSampleRateKey,
@@ -428,7 +428,7 @@ static AVsimple *one=nil;
             NSLog(@"failed to delete %@",path);
         }
     }else{
-      //TODO: notify file not found.
+        //TODO: notify file not found.
     }
 }
 
@@ -471,6 +471,12 @@ static AVsimple *one=nil;
 
 -(void)upload:(NSString *)fn urlBase:(NSString *)url{
     NSString *path=[NSString stringWithFormat:@"%@%@",self.dir,fn];
+    [self uploadPath:path fn:fn urlBase:url];
+}
+/**
+ path include fn
+ */
+-(void)uploadPath:(NSString *)path fn:(NSString *)fn urlBase:(NSString *)url{
     NSFileManager *fm=[NSFileManager defaultManager];
     if([fm fileExistsAtPath:path]){
         NSString *urlFull=[NSString stringWithFormat:@"%@/%@",url,fn];
@@ -491,6 +497,31 @@ static AVsimple *one=nil;
 
 -(void)onEnded:(int)ID ireason:(int)ireason sreason:(NSString *)sreason{
     NSLog(@"upload ended for %d:%d:%@",ID,ireason,sreason);
+}
+
+-(NSString *)copy:(NSURL *)url{
+    NSString *fn=[url lastPathComponent];
+    //TODO: ensure it is not empty
+    NSString *path=[NSString stringWithFormat:@"%@%@",self.dir,fn];
+    NSFileManager *fm=[NSFileManager defaultManager];
+    NSError *error;
+    if([fm fileExistsAtPath:path]){
+        BOOL tf=[fm removeItemAtPath:path error:&error];
+        if(tf){}else{
+            NSLog(@"failed to remove the already exists:%@",path);
+        }
+        //        return nil;
+    }
+    NSLog(@"will copy to %@ from %@", path,url);
+    [url startAccessingSecurityScopedResource];
+    BOOL tf=[NSFileManager.defaultManager copyItemAtURL:url toURL:[NSURL fileURLWithPath:path] error:&error];
+    [url stopAccessingSecurityScopedResource];
+    if(tf)
+        return fn;
+    else{
+        NSLog(@"failed to copy:%@", error);
+        return nil;
+    }
 }
 
 

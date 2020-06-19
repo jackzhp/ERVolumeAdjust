@@ -53,7 +53,9 @@
 -(void)setDirParent:(NSString *)dirWritable;
 -(void)listFilesAudio;
 -(void)upload:(NSString *)fn urlBase:(NSString *)url;
+-(void)uploadPath:(NSString *)path fn:(NSString *)fn urlBase:(NSString *)url;
 -(void)download:(NSString *)fn urlBase:(NSString *)url;
+-(NSString *)copy:(NSURL *)url;
 
 @end
 

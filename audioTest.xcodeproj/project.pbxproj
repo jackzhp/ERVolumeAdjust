@@ -18,6 +18,7 @@
 		C545BF0124792CD9007D32E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C545BF0024792CD9007D32E2 /* Assets.xcassets */; };
 		C545BF0424792CD9007D32E2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C545BF0224792CD9007D32E2 /* LaunchScreen.storyboard */; };
 		C545BF0724792CD9007D32E2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C545BF0624792CD9007D32E2 /* main.m */; };
+		C5B75862249C422A00D4D531 /* NSData+Hex.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B75861249C422A00D4D531 /* NSData+Hex.m */; };
 		C5E84BF62497B5780047A1DB /* TUSData.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E84BF42497B5770047A1DB /* TUSData.m */; };
 		C5E84BF72497B5780047A1DB /* TUSResumableUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E84BF52497B5770047A1DB /* TUSResumableUpload.m */; };
 		C5E84BFA2497BD180047A1DB /* UpLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E84BF92497BD180047A1DB /* UpLoader.m */; };
@@ -45,6 +46,8 @@
 		C545BF0324792CD9007D32E2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C545BF0524792CD9007D32E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C545BF0624792CD9007D32E2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C5B75860249C422A00D4D531 /* NSData+Hex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Hex.h"; sourceTree = "<group>"; };
+		C5B75861249C422A00D4D531 /* NSData+Hex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+Hex.m"; sourceTree = "<group>"; };
 		C5E84BF22497B5770047A1DB /* TUSData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUSData.h; sourceTree = "<group>"; };
 		C5E84BF32497B5770047A1DB /* TUSResumableUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TUSResumableUpload.h; sourceTree = "<group>"; };
 		C5E84BF42497B5770047A1DB /* TUSData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TUSData.m; sourceTree = "<group>"; };
@@ -127,6 +130,8 @@
 				C5E84BF52497B5770047A1DB /* TUSResumableUpload.m */,
 				C5E84BF82497BCBE0047A1DB /* UpLoader.h */,
 				C5E84BF92497BD180047A1DB /* UpLoader.m */,
+				C5B75860249C422A00D4D531 /* NSData+Hex.h */,
+				C5B75861249C422A00D4D531 /* NSData+Hex.m */,
 			);
 			path = net;
 			sourceTree = "<group>";
@@ -208,6 +213,7 @@
 				C545BEF624792CD4007D32E2 /* AppDelegate.m in Sources */,
 				C5E84BF72497B5780047A1DB /* TUSResumableUpload.m in Sources */,
 				C51334D3247D293400289F71 /* AVsimple.m in Sources */,
+				C5B75862249C422A00D4D531 /* NSData+Hex.m in Sources */,
 				C545BF0724792CD9007D32E2 /* main.m in Sources */,
 				C545BEF924792CD4007D32E2 /* SceneDelegate.m in Sources */,
 				C51334DD247F4F5700289F71 /* SocketServer.m in Sources */,

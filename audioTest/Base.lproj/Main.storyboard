@@ -134,6 +134,14 @@
                                     <action selector="doUpload:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uG3-VW-XKe"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xAl-WP-fJ7">
+                                <rect key="frame" x="200" y="460" width="51" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="choose"/>
+                                <connections>
+                                    <action selector="chooseFile:" destination="BYZ-38-t0r" eventType="touchUpInside" id="HLJ-2I-lQx"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>

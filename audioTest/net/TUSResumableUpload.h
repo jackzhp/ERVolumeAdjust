@@ -36,20 +36,23 @@ NS_INLINE TUSRange TUSMakeRange(long long first, long long last) {
 @property (readwrite, copy) TUSUploadProgressBlock progressBlock;
 @property (readwrite) int ID;
 @property (assign) long long sizeFile;
+//@property (nonatomic,strong) NSString *sha256;
+@property (nonatomic,strong) NSString *sha256_hex;
 
 //- (id)initWithURL:(NSString *)url data:(TUSData *)data fingerprint:(NSString *)fingerprint;
 //- (id)initWithURL:(NSString *)urlBase path:(NSString *)pathFile fingerprint:(NSString *)fingerprint;
-+(TUSResumableUpload *)task:(NSString *)urlBase path:(NSString *)pathFile fingerprint:(NSString *)fingerprint;
++(TUSResumableUpload *)task:(NSString *)urlBase path:(NSString *)pathFile;// fingerprint:(NSString *)fingerprint;
 //-(void)set:(int) fake data:(TUSData *)data;
 - (void) start;
-+ (NSMutableDictionary*)resumableUploads;
++ (void)resumableUploads;
 
 - (TUSRange)rangeFromHeader:(NSString*)rangeHeader;
 
 -(void)onStreamError://(TUSData *)data error:
 (NSError *)error;
 -(void)onDataSent;//:(TUSData *)data;
-
-
+-(NSString *)sha256_base64;
+- (void) uploadFile;
+-(void)onUploadDone;
 
 @end

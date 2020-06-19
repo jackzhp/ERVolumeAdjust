@@ -24,9 +24,9 @@ static TUSResumableUpload *task;
 //    }
 
     //    NSError *error;
-    NSString *fingerprint=@"fingerprint"; //TODO: how should I set fingerprint? it is just a kind of ID, so sha256 is good.
+//    NSString *fingerprint=@"fingerprint"; //TODO: how should I set fingerprint? it is just a kind of ID, so sha256 is good.
     task=//[[TUSResumableUpload alloc]initWithURL:urlBase path:pathFile fingerprint:fingerprint];
-    [TUSResumableUpload task:urlBase path:pathFile fingerprint:fingerprint];
+    [TUSResumableUpload task:urlBase path:pathFile]; // fingerprint:fingerprint
     task.ID=IDnext++;
 
     task.failureBlock=^(NSError *error){

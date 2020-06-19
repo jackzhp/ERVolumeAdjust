@@ -12,7 +12,7 @@
 #import "SocketStreams.h"
 #import "SocketServer.h"
 
-@interface ViewController ()
+@interface ViewController ()<UIDocumentPickerDelegate>
 
 @end
 static AVsimple *av; //where to keep this? AppDelegage.
@@ -25,6 +25,7 @@ NSString *dirVoiceMSGs;
     BOOL isPlaying;
     long playStart;
     NSString *fnToPlay; //chosen, but not sent to the AVsimple
+    NSString *pathToPlay;
     NSString *fnPlay;
     long durationPlay; //in milliseconds
     long startPoint; //seek start point
@@ -88,18 +89,18 @@ NSString *dirVoiceMSGs;
                 }else{
                     if([@"bk.anysdk.allFilesAudio" isEqualToString:fn]){
                         NSArray<NSString*> *array=[NSJSONSerialization JSONObjectWithData:(NSData *)data
-                                                                                                options:0
-                                                                                                  error:&error];
+                                                                                  options:0
+                                                                                    error:&error];
                         if(NO){
-                        //bk.anysdk.allFilesAudio('["1590715290.bin","1590710074.bin","1590709533.bin.m4a","273.bin","1590762022.bin","1590714900.bin.m4a","ca3cd36e-e121-4a85-9b3f-0daa92af7d54.2346f.mp3","1590708470.bin.m4a","1590761799.bin","1590712551.bin.m4a","1590713064.bin.m4a","1590762022.bin.m4a","1590706484.bin.m4a","1590719564.bin","1590707044.bin.m4a","1590707712.bin.m4a","1590719564.bin.m4a","771.mp3","1590761871.bin"]')
-                        self.files=@[//@"1590715290.bin",@"1590710074.bin",
-                            @"1590709533.bin.m4a",//@"273.bin","1590762022.bin",
-                            @"1590714900.bin.m4a",//"ca3cd36e-e121-4a85-9b3f-0daa92af7d54.2346f.mp3",
-                            @"1590708470.bin.m4a",//"1590761799.bin",
-                            @"1590712551.bin.m4a",@"1590713064.bin.m4a",@"1590762022.bin.m4a",@"1590706484.bin.m4a",//"1590719564.bin",
-                            @"1590707044.bin.m4a",@"1590707712.bin.m4a",@"1590719564.bin.m4a"];//,"771.mp3","1590761871.bin"
+                            //bk.anysdk.allFilesAudio('["1590715290.bin","1590710074.bin","1590709533.bin.m4a","273.bin","1590762022.bin","1590714900.bin.m4a","ca3cd36e-e121-4a85-9b3f-0daa92af7d54.2346f.mp3","1590708470.bin.m4a","1590761799.bin","1590712551.bin.m4a","1590713064.bin.m4a","1590762022.bin.m4a","1590706484.bin.m4a","1590719564.bin","1590707044.bin.m4a","1590707712.bin.m4a","1590719564.bin.m4a","771.mp3","1590761871.bin"]')
+                            self.files=@[//@"1590715290.bin",@"1590710074.bin",
+                                @"1590709533.bin.m4a",//@"273.bin","1590762022.bin",
+                                @"1590714900.bin.m4a",//"ca3cd36e-e121-4a85-9b3f-0daa92af7d54.2346f.mp3",
+                                @"1590708470.bin.m4a",//"1590761799.bin",
+                                @"1590712551.bin.m4a",@"1590713064.bin.m4a",@"1590762022.bin.m4a",@"1590706484.bin.m4a",//"1590719564.bin",
+                                @"1590707044.bin.m4a",@"1590707712.bin.m4a",@"1590719564.bin.m4a"];//,"771.mp3","1590761871.bin"
                         }else{
-                        self.files=array;
+                            self.files=array;
                         }
                         [self.msgs reloadAllComponents];
                     }else{
@@ -383,14 +384,57 @@ NSString *dirVoiceMSGs;
 }
 - (IBAction)doUpload:(id)sender {
     if(self->fnToPlay){
-    
-    [av upload:self->fnToPlay urlBase:@"http://192.168.254.138:8080/Receiver"];
+        NSString *urlBase=@"http://192.168.254.138:8080/Receiver";
+        if(self->pathToPlay){
+            [av uploadPath:self->pathToPlay fn:self->fnToPlay urlBase:urlBase];
+        }else{
+            [av upload:self->fnToPlay urlBase:urlBase];
+        }
     }else{
         NSLog(@"file not chosen");
     }
     
 }
 
+- (IBAction)chooseFile:(id)sender {
+    NSArray<NSString *> *dts=@[@"com.pkware.zip-archive"]; //if I use "*", I can not pick any file
+    UIDocumentPickerViewController *vc=[[UIDocumentPickerViewController alloc]initWithDocumentTypes:dts inMode:UIDocumentPickerModeOpen];
+    if (@available(iOS 11.0, *)) {
+        vc.allowsMultipleSelection=NO;
+    } else {
+        // Fallback on earlier versions
+    }
+    //    vc.directoryURL=; //its initial location
+    vc.delegate=self;
+    [self presentViewController:vc animated:YES completion:^{
+        
+    }];
+}
+
+
+//API_UNAVAILABLE(tvos) @protocol UIDocumentPickerDelegate <NSObject>
+//@optional
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray <NSURL *>*)urls API_AVAILABLE(ios(11.0)){
+    if(urls.count>0){
+        self->fnToPlay=[urls[0] lastPathComponent];
+        self->pathToPlay=urls[0].absoluteString;
+        NSLog(@"file chosen %lu 0:%@",(unsigned long)urls.count,urls[0]);
+        /* NSFileCoordinator is a must? Yes. otherwise, the file can not be opened.
+         */
+        NSFileCoordinator *fc=[[NSFileCoordinator alloc]init]; //initWithFilePresenter:self
+        NSError *error;
+        NSURL *url=urls[0];
+        [fc coordinateReadingItemAtURL:url
+                               options:NSFileCoordinatorReadingWithoutChanges
+                                 error:&error
+                            byAccessor:^(NSURL *newURL){
+            NSLog(@"new url:%@",newURL); //in fact it is same as url
+            self->fnToPlay=[av copy:newURL];
+            self->pathToPlay=nil; //TODO: remove this variable, it is useless.
+        }];
+        
+    }
+}
 
 
 @end
