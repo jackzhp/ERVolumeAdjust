@@ -11,6 +11,7 @@
 #import "AVsimple.h"
 #import "SocketStreams.h"
 #import "SocketServer.h"
+#import "Bonjour.h"
 
 @interface ViewController ()<UIDocumentPickerDelegate>
 
@@ -159,10 +160,11 @@ NSString *dirVoiceMSGs;
             //            fnCurrent=@"ca3cd36e-e121-4a85-9b3f-0daa92af7d54.2346f.mp3"; //.mp3
         }
         
-        
+        BOOL connectAsClient=NO, publishBonjour=YES, searchBonjour=YES;
         NSString *host=@"192.168.254.139"; //ipad
         int port=11223;
         [SocketServer listen:YES ip:host port:port av:av];
+        if(connectAsClient){
         dispatch_async(dispatch_get_main_queue(), ^{
             //host=@"172.217.26.132"; //www.google.com. yes, I can connect to it at port 80.
             NSString *hosttest=[NSString stringWithFormat:@"toLocal%@",host];
@@ -173,6 +175,31 @@ NSString *dirVoiceMSGs;
             [ss connect:host port:port];
             //            av.ss=ss;
         });
+        }
+        NSString *serviceTypeBonjour=@"_road._tcp.";//@"_road._udp";
+        if(publishBonjour){
+            int pkType=1;
+            NSString *pk=@"asdfasfd";
+            [Bonjour publish:serviceTypeBonjour pkType:pkType pk:pk host:host port:port result:^(NSDictionary<NSString *, NSNumber *> *dict){
+                NSLog(@"failed to publish:%@",dict);
+                
+                if(dict){}else{
+                    if(searchBonjour){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+
+                        [Bonjour startSearch:serviceTypeBonjour result:^(NSDictionary<NSString *, NSNumber *> *dict){
+                            NSLog(@"failed to start search:%@",dict);
+                        }];
+                        });
+                    }
+                }
+            }];
+        }
+//        if(searchBonjour){
+//            [Bonjour startSearch:serviceTypeBonjour result:^(NSDictionary<NSString *, NSNumber *> *dict){
+//                NSLog(@"failed to start search:%@",dict);
+//            }];
+//        }
     }
     [self refreshDir];
     self.msgs.dataSource=self;
