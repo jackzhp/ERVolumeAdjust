@@ -29,7 +29,7 @@
 #import "NSData+Hex.h"
 
 
-@interface WrapperService:NSObject
+@interface WrapperService:NSObject<NSNetServiceDelegate>
 @property (nonatomic,strong) NSNetService *service;
 
 @property (nonatomic,strong) void (^result)(NSDictionary<NSString *, NSNumber *> *errorDict);
@@ -43,7 +43,7 @@
 @property (nonatomic,strong) void (^result)(NSDictionary<NSString *, NSNumber *> *errorDict);
 
 @end
-@interface Bonjour()<NSNetServiceDelegate>
+@interface Bonjour()
 +(WrapperService *)searchPeerByService:(NSNetService *)service;
 +(WrapperService *)searchLocalService:(NSNetService *)service;
 @end
@@ -58,6 +58,168 @@ static BOOL test=YES;
 
 
 @implementation WrapperService
+
+//@protocol NSNetServiceDelegate <NSObject>
+//@optional
+
+/* Sent to the NSNetService instance's delegate prior to advertising the service on the network. If for some reason the service cannot be published, the delegate will not receive this message, and an error will be delivered to the delegate via the delegate's -netService:didNotPublish: method.
+ */
+- (void)netServiceWillPublish:(NSNetService *)sender{
+    //    assert(sender==_server);
+    NSLog(@"net service will publish");
+    
+}
+
+/* Sent to the NSNetService instance's delegate when the publication of the instance is complete and successful.
+ */
+- (void)netServiceDidPublish:(NSNetService *)sender{
+    //    assert(sender==_server);
+    
+    NSLog(@"net service did publish, port#:%ld, addresses:%@ %@",(long)sender.port,sender.addresses,sender);
+#pragma unused(sender)
+    WrapperService *oservice=[Bonjour searchLocalService:sender];
+    oservice.result(nil);
+    
+    //    self.registeredName = self.server.name;
+    //    if (self.picker != nil) {
+    //        // If our server wasn't started when we brought up the picker, we
+    //        // left the picker stopped (because without our service name it can't
+    //        // filter us out of its list).  In that case we have to start the picker
+    //        // now.
+    //
+    //        [self startPicker];
+    //    }
+    //
+    
+}
+
+/* Sent to the NSNetService instance's delegate when an error in publishing the instance occurs. The error dictionary will contain two key/value pairs representing the error domain and code (see the NSNetServicesError enumeration above for error code constants). It is possible for an error to occur after a successful publication.
+ */
+- (void)netService:(NSNetService *)sender didNotPublish:(NSDictionary<NSString *, NSNumber *> *)errorDict{
+    /*
+     This is called when the server stops of its own accord.  The only reason
+     that might happen is if the Bonjour registration fails when we reregister
+     the server, and that's hard to trigger because we use auto-rename.  I've
+     left an assert here so that, if this does happen, we can figure out why it
+     happens and then decide how best to handle it.
+     
+     */
+    NSLog(@"net service did not publish:%@",errorDict);
+    //I got -72004: NSNetServicesBadArgumentError
+    //    assert(sender==_server);
+#pragma unused(sender)
+#pragma unused(errorDict)
+    WrapperService *oservice=[Bonjour searchLocalService:sender];
+    oservice.result(errorDict);
+    //    assert(NO);
+    
+}
+
+/* Sent to the NSNetService instance's delegate prior to resolving a service on the network. If for some reason the resolution cannot occur, the delegate will not receive this message, and an error will be delivered to the delegate via the delegate's -netService:didNotResolve: method.
+ */
+- (void)netServiceWillResolve:(NSNetService *)sender{
+    NSLog(@"net service will resolve");
+    //    assert(sender==_server);
+    
+}
+
+/* Sent to the NSNetService instance's delegate when one or more addresses have been resolved for an NSNetService instance. Some NSNetService methods will return different results before and after a successful resolution. An NSNetService instance may get resolved more than once; truly robust clients may wish to resolve again after an error, or to resolve more than once.
+ */
+- (void)netServiceDidResolveAddress:(NSNetService *)sender{
+    NSLog(@"net service did resolve address:%@",sender);
+//    assert(NO);
+    //TODO: here the job of Bonjour is done, notify the caller to connect
+    
+    //    assert(sender==_service);
+    //    unsigned long count=sender.addresses.count;
+    //    NSLog(@"peer did resolve, port:%ld addresses:%lu",(long)sender.port,count);
+    //    for(NSData *data in sender.addresses){
+    //        struct sockaddr *ps=(struct sockaddr *)data.bytes;
+    //
+    //    }
+    NSLog(@"after resolve addresses:%@",sender.addresses);
+    NSLog(@"after resolve hostname:%@",sender.hostName);
+
+    
+}
+
+/* Sent to the NSNetService instance's delegate when an error in resolving the instance occurs. The error dictionary will contain two key/value pairs representing the error domain and code (see the NSNetServicesError enumeration above for error code constants).
+ */
+- (void)netService:(NSNetService *)sender didNotResolve:(NSDictionary<NSString *, NSNumber *> *)errorDict{
+    NSLog(@"net service did not resolve");
+    //    assert(sender==_server);
+    
+}
+
+/* Sent to the NSNetService instance's delegate when the instance's previously running publication or resolution request has stopped.
+ */
+- (void)netServiceDidStop:(NSNetService *)sender{
+    NSLog(@"net service did stop");
+    //    assert(sender==_server);
+    
+}
+
+/* Sent to the NSNetService instance's delegate when the instance is being monitored and the instance's TXT record has been updated. The new record is contained in the data parameter.
+ */
+- (void)netService:(NSNetService *)sender didUpdateTXTRecordData:(NSData *)data{
+    //    assert(sender==_server);
+    if([Bonjour searchLocalService:sender]){
+        NSLog(@"net service did update txt record data");
+        return;
+    }
+    NSLog(@"peer did update TXTRecord Data:%@",data);
+    
+}
+
+
+/* Sent to a published NSNetService instance's delegate when a new connection is
+ * received. Before you can communicate with the connecting client, you must -open
+ * and schedule the streams. To reject a connection, just -open both streams and
+ * then immediately -close them.
+ 
+ * To enable TLS on the stream, set the various TLS settings using
+ * kCFStreamPropertySSLSettings before calling -open. You must also specify
+ * kCFBooleanTrue for kCFStreamSSLIsServer in the settings dictionary along with
+ * a valid SecIdentityRef as the first entry of kCFStreamSSLCertificates.
+ */
+- (void)netService:(NSNetService *)sender didAcceptConnectionWithInputStream:(NSInputStream *)inputStream outputStream:(NSOutputStream *)outputStream API_AVAILABLE(macos(10.9), ios(7.0), watchos(2.0), tvos(9.0)){
+    //    assert(NO);
+    NSLog(@"net serivice did accept connection with input stream, but which peer");
+    // Due to a bug <rdar://problem/15626440>, this method is called on some unspecified
+    // queue rather than the queue associated with the net service (which in this case
+    // is the main queue).  Work around this by bouncing to the main queue.
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+#pragma unused(sender)
+        assert(inputStream != nil);
+        assert(outputStream != nil);
+        
+        //        assert( (self.inputStream != nil) == (self.outputStream != nil) );      // should either have both or neither
+        
+        if (YES) { //self.inputStream != nil
+            // We already have a game in place; reject this new one.
+            [inputStream open];
+            [inputStream close];
+            [outputStream open];
+            [outputStream close];
+        } else {
+            // Start up the new game.  Start by deregistering the server, to discourage
+            // other folks from connecting to us (and being disappointed when we reject
+            // the connection).
+            
+            //            [self.server stop];
+            //            self.isServerStarted = NO;
+            //            self.registeredName = nil;
+            
+            // Latch the input and output sterams and kick off an open.
+            
+            //            self.inputStream  = inputStream;
+            //            self.outputStream = outputStream;
+            //
+            //            [self openStreams];
+        }
+    }];
+    
+}
 
 
 @end
@@ -146,9 +308,9 @@ static BOOL test=YES;
         /*TODO:   do I need to resolve its address?
          and how can I receive TXTRecordData?
          */
-        NSLog(@"addresses:%@",service.addresses);
-        NSLog(@"hostname:%@",service.hostName);
-        service.delegate=p2p;
+        NSLog(@"before resolve addresses:%@",service.addresses);
+        NSLog(@"before resolve hostname:%@",service.hostName);
+        service.delegate=peer;
         [service resolveWithTimeout:10];
         [service startMonitoring];
     }
@@ -218,7 +380,7 @@ static BOOL test=YES;
     ws.service=service;
     [servicesLocal addObject:ws];
     service.includesPeerToPeer = YES;
-    service.delegate=p2p;
+    service.delegate=ws;
     
     uint8_t one=1;
     NSData *d_version=[[NSData alloc]initWithBytes:&one length:1];
@@ -323,165 +485,6 @@ static BOOL test=YES;
 }
 
 
-//@protocol NSNetServiceDelegate <NSObject>
-//@optional
-
-/* Sent to the NSNetService instance's delegate prior to advertising the service on the network. If for some reason the service cannot be published, the delegate will not receive this message, and an error will be delivered to the delegate via the delegate's -netService:didNotPublish: method.
- */
-- (void)netServiceWillPublish:(NSNetService *)sender{
-    //    assert(sender==_server);
-    NSLog(@"net service will publish");
-    
-}
-
-/* Sent to the NSNetService instance's delegate when the publication of the instance is complete and successful.
- */
-- (void)netServiceDidPublish:(NSNetService *)sender{
-    //    assert(sender==_server);
-    
-    NSLog(@"net service did publish, port#:%ld, addresses:%@ %@",(long)sender.port,sender.addresses,sender);
-#pragma unused(sender)
-    WrapperService *oservice=[Bonjour searchLocalService:sender];
-    oservice.result(nil);
-    
-    //    self.registeredName = self.server.name;
-    //    if (self.picker != nil) {
-    //        // If our server wasn't started when we brought up the picker, we
-    //        // left the picker stopped (because without our service name it can't
-    //        // filter us out of its list).  In that case we have to start the picker
-    //        // now.
-    //
-    //        [self startPicker];
-    //    }
-    //
-    
-}
-
-/* Sent to the NSNetService instance's delegate when an error in publishing the instance occurs. The error dictionary will contain two key/value pairs representing the error domain and code (see the NSNetServicesError enumeration above for error code constants). It is possible for an error to occur after a successful publication.
- */
-- (void)netService:(NSNetService *)sender didNotPublish:(NSDictionary<NSString *, NSNumber *> *)errorDict{
-    /*
-     This is called when the server stops of its own accord.  The only reason
-     that might happen is if the Bonjour registration fails when we reregister
-     the server, and that's hard to trigger because we use auto-rename.  I've
-     left an assert here so that, if this does happen, we can figure out why it
-     happens and then decide how best to handle it.
-     
-     */
-    NSLog(@"net service did not publish:%@",errorDict);
-    //I got -72004: NSNetServicesBadArgumentError
-    //    assert(sender==_server);
-#pragma unused(sender)
-#pragma unused(errorDict)
-    WrapperService *oservice=[Bonjour searchLocalService:sender];
-    oservice.result(errorDict);
-    //    assert(NO);
-    
-}
-
-/* Sent to the NSNetService instance's delegate prior to resolving a service on the network. If for some reason the resolution cannot occur, the delegate will not receive this message, and an error will be delivered to the delegate via the delegate's -netService:didNotResolve: method.
- */
-- (void)netServiceWillResolve:(NSNetService *)sender{
-    NSLog(@"net service will resolve");
-    //    assert(sender==_server);
-    
-}
-
-/* Sent to the NSNetService instance's delegate when one or more addresses have been resolved for an NSNetService instance. Some NSNetService methods will return different results before and after a successful resolution. An NSNetService instance may get resolved more than once; truly robust clients may wish to resolve again after an error, or to resolve more than once.
- */
-- (void)netServiceDidResolveAddress:(NSNetService *)sender{
-    NSLog(@"net service did resolve address");
-//    assert(NO);
-    //TODO: here the job of Bonjour is done, notify the caller to connect
-    
-    //    assert(sender==_service);
-    //    unsigned long count=sender.addresses.count;
-    //    NSLog(@"peer did resolve, port:%ld addresses:%lu",(long)sender.port,count);
-    //    for(NSData *data in sender.addresses){
-    //        struct sockaddr *ps=(struct sockaddr *)data.bytes;
-    //
-    //    }
-    
-    
-}
-
-/* Sent to the NSNetService instance's delegate when an error in resolving the instance occurs. The error dictionary will contain two key/value pairs representing the error domain and code (see the NSNetServicesError enumeration above for error code constants).
- */
-- (void)netService:(NSNetService *)sender didNotResolve:(NSDictionary<NSString *, NSNumber *> *)errorDict{
-    NSLog(@"net service did not resolve");
-    //    assert(sender==_server);
-    
-}
-
-/* Sent to the NSNetService instance's delegate when the instance's previously running publication or resolution request has stopped.
- */
-- (void)netServiceDidStop:(NSNetService *)sender{
-    NSLog(@"net service did stop");
-    //    assert(sender==_server);
-    
-}
-
-/* Sent to the NSNetService instance's delegate when the instance is being monitored and the instance's TXT record has been updated. The new record is contained in the data parameter.
- */
-- (void)netService:(NSNetService *)sender didUpdateTXTRecordData:(NSData *)data{
-    //    assert(sender==_server);
-    if([Bonjour searchLocalService:sender]){
-        NSLog(@"net service did update txt record data");
-        return;
-    }
-    NSLog(@"peer did update TXTRecord Data:%@",data);
-    
-}
-
-
-/* Sent to a published NSNetService instance's delegate when a new connection is
- * received. Before you can communicate with the connecting client, you must -open
- * and schedule the streams. To reject a connection, just -open both streams and
- * then immediately -close them.
- 
- * To enable TLS on the stream, set the various TLS settings using
- * kCFStreamPropertySSLSettings before calling -open. You must also specify
- * kCFBooleanTrue for kCFStreamSSLIsServer in the settings dictionary along with
- * a valid SecIdentityRef as the first entry of kCFStreamSSLCertificates.
- */
-- (void)netService:(NSNetService *)sender didAcceptConnectionWithInputStream:(NSInputStream *)inputStream outputStream:(NSOutputStream *)outputStream API_AVAILABLE(macos(10.9), ios(7.0), watchos(2.0), tvos(9.0)){
-    //    assert(NO);
-    NSLog(@"net serivice did accept connection with input stream, but which peer");
-    // Due to a bug <rdar://problem/15626440>, this method is called on some unspecified
-    // queue rather than the queue associated with the net service (which in this case
-    // is the main queue).  Work around this by bouncing to the main queue.
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-#pragma unused(sender)
-        assert(inputStream != nil);
-        assert(outputStream != nil);
-        
-        //        assert( (self.inputStream != nil) == (self.outputStream != nil) );      // should either have both or neither
-        
-        if (YES) { //self.inputStream != nil
-            // We already have a game in place; reject this new one.
-            [inputStream open];
-            [inputStream close];
-            [outputStream open];
-            [outputStream close];
-        } else {
-            // Start up the new game.  Start by deregistering the server, to discourage
-            // other folks from connecting to us (and being disappointed when we reject
-            // the connection).
-            
-            //            [self.server stop];
-            //            self.isServerStarted = NO;
-            //            self.registeredName = nil;
-            
-            // Latch the input and output sterams and kick off an open.
-            
-            //            self.inputStream  = inputStream;
-            //            self.outputStream = outputStream;
-            //
-            //            [self openStreams];
-        }
-    }];
-    
-}
 +(WrapperService *)searchLocalService:(NSNetService *)service{
     for(WrapperService *ws in servicesLocal){
         if([ws.service isEqual:service])
